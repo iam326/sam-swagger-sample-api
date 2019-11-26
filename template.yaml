@@ -1,39 +1,75 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  sam-swagger-sample-api
+Description: sam-swagger-sample-api
 
-  Sample SAM Template for sam-swagger-sample-api
-
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
 
 Resources:
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  PythonVersionApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: s3://iam326.sam-swagger-sample/swagger.yaml
+
+  SampleApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - PythonVersionApi
+      - PythonVersionApiProdStage
+    Properties:
+      Name: sample-api-key
+      Enabled: true
+      StageKeys:
+        - RestApiId: !Ref PythonVersionApi
+          StageName: Prod
+
+  SampleApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - PythonVersionApi
+      - PythonVersionApiProdStage
+    Properties:
+      ApiStages:
+        - ApiId: !Ref PythonVersionApi
+          Stage: Prod
+      Throttle:
+        BurstLimit: 200
+        RateLimit: 100
+      UsagePlanName: sample-api-usage-plan
+
+  SampleApiUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - SampleApiKey
+      - SampleApiUsagePlan
+    Properties:
+      KeyId: !Ref SampleApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref SampleApiUsagePlan
+
+  PythonVersionFunction:
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: hello_world/
       Handler: app.lambda_handler
-      Runtime: python3.6
+      Runtime: python3.7
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        GetVersion:
+          Type: Api
           Properties:
-            Path: /hello
+            Path: /version
             Method: get
+            RestApiId: !Ref PythonVersionApi
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  PythonVersionApiUrl:
+    Description: API Gateway endpoint URL for Prod stage for Python Version Function
+    Value: !Sub https://${PythonVersionApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/version
+  SampleApiKey:
+    Value: !Ref SampleApiKey
