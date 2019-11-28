@@ -12,13 +12,13 @@ $ pip --version
 pip 19.2.3 from /usr/local/lib/python3.7/site-packages/pip (python 3.7)
 
 $ sam --version
-SAM CLI, version 0.22.0
+SAM CLI, version 0.19.0
 ```
 
 ## Setup
 
 ```
-$ pip install pip==19.2.3 aws-sam-cli==0.22.0
+$ pip install pip==19.2.3 aws-sam-cli==0.19.0
 
 $ aws s3 mb s3://iam326.sam-swagger-sample
 ```
@@ -47,4 +47,4 @@ http://localhost/
 
 - Lambda の Runtime で指定した Python のバージョンと、ローカルのバージョンを合わせる必要がある
 
-- 記載した pip や sam 以外のバージョンを使用すると、`sam build`でエラーが発生する可能性がある
+- 記載した pip や sam 以外のバージョンを使用すると、`sam build` や `sam local start-api` でエラーが発生する可能性がある
