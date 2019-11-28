@@ -25,8 +25,17 @@ $ aws s3 mb s3://iam326.sam-swagger-sample
 
 ## Usage
 
+### Deploy
+
 ```
-./deploy.sh
+$ ./deploy.sh
+```
+
+### Unit Test
+
+```
+$ pip install pytest pytest-mock --user
+$ python -m pytest tests/ -v
 ```
 
 ## Memo
