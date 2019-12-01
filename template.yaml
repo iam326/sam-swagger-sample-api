@@ -10,7 +10,7 @@ Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: sample-user-pool
+      UserPoolName: !Sub "${AWS::StackName}-user-pool"
       AdminCreateUserConfig:
         AllowAdminCreateUserOnly: true
       MfaConfiguration: "OFF"
@@ -26,7 +26,7 @@ Resources:
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      ClientName: sample-user-pool-client
+      ClientName: !Sub "${AWS::StackName}-user-pool-client"
       ExplicitAuthFlows:
         - USER_PASSWORD_AUTH
       GenerateSecret: false
@@ -37,7 +37,7 @@ Resources:
     Type: AWS::Cognito::IdentityPool
     Properties:
       AllowUnauthenticatedIdentities: false
-      IdentityPoolName: sample-id-pool
+      IdentityPoolName: !Sub "${AWS::StackName}-id-pool"
       CognitoIdentityProviders:
         - ClientId: !Ref UserPoolClient
           ProviderName: !Sub "cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}"
