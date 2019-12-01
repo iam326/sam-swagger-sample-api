@@ -31,6 +31,12 @@ $ aws s3 mb s3://iam326.sam-swagger-sample
 $ ./deploy.sh
 ```
 
+### CREATE USER
+
+```
+$ ./cognito-create-user.sh <USERNAME> <EMAIL> <PASSWORD>
+```
+
 ### Unit Test
 
 ```
