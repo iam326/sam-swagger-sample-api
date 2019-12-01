@@ -26,17 +26,4 @@ readonly APIURL=$(aws cloudformation describe-stacks \
   --query 'Stacks[].Outputs[?OutputKey==`PythonVersionApiUrl`].OutputValue' \
 )
 
-readonly APIKEY_ID=$(aws cloudformation describe-stacks \
-  --stack-name ${STACK_NAME} \
-  --output text \
-  --query 'Stacks[].Outputs[?OutputKey==`SampleApiKey`].OutputValue' \
-)
-
-readonly APIKEY=$(aws apigateway get-api-key \
-  --api-key ${APIKEY_ID} \
-  --include-value \
-  --output text \
-  --query 'value' \
-)
-
-echo "curl -H \"x-api-key: ${APIKEY}\" ${APIURL}"
+echo ${APIURL}
