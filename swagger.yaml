@@ -30,14 +30,6 @@ paths:
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy
-      security:
-        - SampleApiKey: []
-
-securityDefinitions:
-  SampleApiKey:
-    type: apiKey
-    name: x-api-key
-    in: header
 
 definitions:
   Version:
