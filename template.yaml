@@ -81,7 +81,7 @@ Resources:
       Roles:
         authenticated: !GetAtt AuthenticatedRole.Arn
 
-  PythonVersionApi:
+  SampleApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
@@ -108,12 +108,82 @@ Resources:
           Properties:
             Path: /version
             Method: get
-            RestApiId: !Ref PythonVersionApi
+            RestApiId: !Ref SampleApi
+
+  GetTodoListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: get_todo_list.lambda_handler
+      Runtime: python3.7
+      Events:
+        GetTodoList:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: get
+            RestApiId: !Ref SampleApi
+
+  GetTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: get_todo.lambda_handler
+      Runtime: python3.7
+      Events:
+        GetTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: get
+            RestApiId: !Ref SampleApi
+
+  PostTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: post_todo.lambda_handler
+      Runtime: python3.7
+      Events:
+        PostTodo:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: post
+            RestApiId: !Ref SampleApi
+
+  PatchTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: patch_todo.lambda_handler
+      Runtime: python3.7
+      Events:
+        PatchTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: patch
+            RestApiId: !Ref SampleApi
+
+  DeleteTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: delete_todo.lambda_handler
+      Runtime: python3.7
+      Events:
+        DeleteTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: delete
+            RestApiId: !Ref SampleApi
 
 Outputs:
-  PythonVersionApiUrl:
+  SampleApiUrl:
     Description: API Gateway endpoint URL for Prod stage for Python Version Function
-    Value: !Sub https://${PythonVersionApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/version
+    Value: !Sub https://${SampleApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/version
   UserPoolId:
     Value: !Ref UserPool
   UserPoolArn:

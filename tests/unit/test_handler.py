@@ -3,6 +3,11 @@ import json
 import pytest
 
 from hello_world import app
+from hello_world.todo import get_todo_list
+from hello_world.todo import get_todo
+from hello_world.todo import post_todo
+from hello_world.todo import patch_todo
+from hello_world.todo import delete_todo
 
 
 @pytest.fixture()
@@ -70,3 +75,50 @@ def test_lambda_handler(apigw_event, mocker):
   assert response["statusCode"] == 200
   assert "python" in response["body"]
   assert data["python"] == "3.7.5"
+
+
+def test_get_todo_list(apigw_event, mocker):
+
+  response = get_todo_list.lambda_handler(apigw_event, "")
+  data = json.loads(response["body"])
+
+  assert response["statusCode"] == 200
+  assert "todo" in response["body"]
+  assert data["todo"] == [{}, {}]
+
+
+def test_get_todo(apigw_event, mocker):
+
+  response = get_todo.lambda_handler(apigw_event, "")
+  data = json.loads(response["body"])
+
+  assert response["statusCode"] == 200
+  assert "todo" in response["body"]
+  assert data["todo"] == [{}]
+
+
+def test_post_todo(apigw_event, mocker):
+
+  response = post_todo.lambda_handler(apigw_event, "")
+  data = json.loads(response["body"])
+
+  assert response["statusCode"] == 200
+  assert data == {}
+
+
+def test_patch_todo(apigw_event, mocker):
+
+  response = patch_todo.lambda_handler(apigw_event, "")
+  data = json.loads(response["body"])
+
+  assert response["statusCode"] == 200
+  assert data == {}
+
+
+def test_delete_todo(apigw_event, mocker):
+
+  response = delete_todo.lambda_handler(apigw_event, "")
+  data = json.loads(response["body"])
+
+  assert response["statusCode"] == 200
+  assert data == {}

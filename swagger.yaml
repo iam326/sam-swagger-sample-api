@@ -6,6 +6,7 @@ info:
 basePath: /Prod
 tags:
   - name: Version
+  - name: Todo
 schemes:
   - https
 paths:
@@ -30,6 +31,152 @@ paths:
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy
+  /todo:
+    get:
+      tags:
+        - Todo
+      summary: TODOリストの取得
+      description: APIで追加したTODOリストを取得する
+      parameters:
+        - name: date
+          in: query
+          description: 取得したい日付
+          required: true
+          type: string
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: "#/definitions/Todo"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+        passthroughBehavior: when_no_templates
+        httpMethod: POST
+        type: aws_proxy
+    post:
+      tags:
+        - Todo
+      summary: TODOの追加
+      description: APIでTODOを追加する
+      parameters:
+        - name: date
+          in: formData
+          description: 日付
+          required: true
+          type: string
+        - name: title
+          in: formData
+          description: タイトル
+          required: true
+          type: string
+        - name: body
+          in: formData
+          description: 内容
+          required: true
+          type: string
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      responses:
+        200:
+          description: successful operation
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+        passthroughBehavior: when_no_templates
+        httpMethod: POST
+        type: aws_proxy
+  /todo/{id}:
+    get:
+      tags:
+        - Todo
+      summary: TODOの取得
+      description: APIで追加したTODOを取得する
+      parameters:
+        - name: id
+          in: path
+          description: TODO ID
+          required: true
+          type: number
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: "#/definitions/Todo"
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+        passthroughBehavior: when_no_templates
+        httpMethod: POST
+        type: aws_proxy
+    patch:
+      tags:
+        - Todo
+      summary: TODOの更新
+      description: APIでTODOを更新する
+      parameters:
+        - name: id
+          in: path
+          description: TODO ID
+          required: true
+          type: number
+        - name: title
+          in: formData
+          description: タイトル
+          required: true
+          type: string
+        - name: body
+          in: formData
+          description: 内容
+          required: true
+          type: string
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      responses:
+        200:
+          description: successful operation
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+        passthroughBehavior: when_no_templates
+        httpMethod: POST
+        type: aws_proxy
+    delete:
+      tags:
+        - Todo
+      summary: TODOの削除
+      description: APIでTODOを削除する
+      parameters:
+        - name: id
+          in: path
+          description: TODO ID
+          required: true
+          type: number
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: successful operation
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+        passthroughBehavior: when_no_templates
+        httpMethod: POST
+        type: aws_proxy
 
 definitions:
   Version:
@@ -39,3 +186,12 @@ definitions:
     properties:
       python:
         type: string
+  Todo:
+    type: object
+    required:
+      - todo
+    properties:
+      todo:
+        type: array
+        items:
+          type: object
