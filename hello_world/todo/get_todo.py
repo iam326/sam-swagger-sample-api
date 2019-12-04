@@ -1,12 +1,22 @@
+import boto3
 import json
 import sys
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("sam-swagger-sample-todo")
 
 
 def lambda_handler(event, context):
 
+  result = table.get_item(
+      Key={
+          "id": "hoge"
+      }
+  )
+
   return {
       "statusCode": 200,
       "body": json.dumps({
-          "todo": [{}]
+          "todo": [result]
       })
   }
