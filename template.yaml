@@ -116,6 +116,7 @@ Resources:
       CodeUri: hello_world/todo/
       Handler: get_todo_list.lambda_handler
       Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
       Events:
         GetTodoList:
           Type: Api
@@ -130,6 +131,7 @@ Resources:
       CodeUri: hello_world/todo/
       Handler: get_todo.lambda_handler
       Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
       Events:
         GetTodo:
           Type: Api
@@ -144,6 +146,7 @@ Resources:
       CodeUri: hello_world/todo/
       Handler: post_todo.lambda_handler
       Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
       Events:
         PostTodo:
           Type: Api
@@ -158,6 +161,7 @@ Resources:
       CodeUri: hello_world/todo/
       Handler: patch_todo.lambda_handler
       Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
       Events:
         PatchTodo:
           Type: Api
@@ -172,6 +176,7 @@ Resources:
       CodeUri: hello_world/todo/
       Handler: delete_todo.lambda_handler
       Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
       Events:
         DeleteTodo:
           Type: Api
@@ -179,6 +184,32 @@ Resources:
             Path: /todo/{id}
             Method: delete
             RestApiId: !Ref SampleApi
+
+  TodoDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${AWS::StackName}-todo"
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: date
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: date-index
+          KeySchema:
+            - AttributeName: date
+              KeyType: HASH
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
 
 Outputs:
   SampleApiUrl:
