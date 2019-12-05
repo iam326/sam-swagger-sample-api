@@ -81,6 +81,34 @@ Resources:
       Roles:
         authenticated: !GetAtt AuthenticatedRole.Arn
 
+  CloudWatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - >-
+          arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  # アカウント共有設定
+  Account:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt CloudWatchRole.Arn
+
+  CloudWatchAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${AWS::StackName}-api-logs"
+      RetentionInDays: 7
+
   SampleApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -95,6 +123,14 @@ Resources:
           Name: AWS::Include
           Parameters:
             Location: s3://iam326.sam-swagger-sample/swagger.yaml
+
+      AccessLogSetting:
+        DestinationArn: !GetAtt CloudWatchAccessLogGroup.Arn
+      MethodSettings:
+        - DataTraceEnabled: true
+          LoggingLevel: INFO
+          ResourcePath: "/*"
+          HttpMethod: "*"
 
   PythonVersionFunction:
     Type: AWS::Serverless::Function
