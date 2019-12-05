@@ -54,7 +54,7 @@ paths:
             $ref: "#/definitions/Todo"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetTodoListFunction.Arn}/invocations
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy
@@ -88,7 +88,7 @@ paths:
           description: successful operation
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PostTodoFunction.Arn}/invocations
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy
@@ -115,7 +115,7 @@ paths:
             $ref: "#/definitions/Todo"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetTodoFunction.Arn}/invocations
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy
@@ -149,7 +149,7 @@ paths:
           description: successful operation
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PatchTodoFunction.Arn}/invocations
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy
@@ -173,7 +173,7 @@ paths:
           description: successful operation
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${PythonVersionFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteTodoFunction.Arn}/invocations
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy
