@@ -1,11 +1,12 @@
 import boto3
 import json
+import os
 import sys
 
 from boto3.dynamodb.conditions import Key
 
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("sam-swagger-sample-todo")
+table = dynamodb.Table(os.environ["TODO_TABLE_NAME"])
 
 
 def lambda_handler(event, context):

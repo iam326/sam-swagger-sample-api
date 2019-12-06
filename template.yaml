@@ -6,6 +6,10 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  TodoTableName:
+    Type: String
+
 Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
@@ -168,6 +172,9 @@ Resources:
       Handler: get_todo.lambda_handler
       Runtime: python3.7
       Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
       Events:
         GetTodo:
           Type: Api
@@ -183,6 +190,9 @@ Resources:
       Handler: post_todo.lambda_handler
       Runtime: python3.7
       Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
       Events:
         PostTodo:
           Type: Api
@@ -198,6 +208,9 @@ Resources:
       Handler: patch_todo.lambda_handler
       Runtime: python3.7
       Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
       Events:
         PatchTodo:
           Type: Api
@@ -213,6 +226,9 @@ Resources:
       Handler: delete_todo.lambda_handler
       Runtime: python3.7
       Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
       Events:
         DeleteTodo:
           Type: Api
@@ -224,7 +240,7 @@ Resources:
   TodoDynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub "${AWS::StackName}-todo"
+      TableName: !Ref TodoTableName
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S

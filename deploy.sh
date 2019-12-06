@@ -16,7 +16,9 @@ sam package \
 sam deploy \
   --template-file packaged.yaml \
   --stack-name ${STACK_NAME} \
-  --capabilities CAPABILITY_IAM
+  --capabilities CAPABILITY_IAM \
+  --parameter-overrides \
+    TodoTableName="${STACK_NAME}-todo"
 
 rm packaged.yaml
 
