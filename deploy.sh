@@ -18,7 +18,8 @@ sam deploy \
   --stack-name ${STACK_NAME} \
   --capabilities CAPABILITY_IAM \
   --parameter-overrides \
-    TodoTableName="${STACK_NAME}-todo"
+    TodoTableName="${STACK_NAME}-todo" \
+    TodoDateIndexName="date-index"
 
 rm packaged.yaml
 

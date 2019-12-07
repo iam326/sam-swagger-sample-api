@@ -9,6 +9,8 @@ Globals:
 Parameters:
   TodoTableName:
     Type: String
+  TodoDateIndexName:
+    Type: String
 
 Resources:
   UserPool:
@@ -157,6 +159,10 @@ Resources:
       Handler: get_todo_list.lambda_handler
       Runtime: python3.7
       Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
+          TODO_DATE_INDEX_NAME: !Ref TodoDateIndexName
       Events:
         GetTodoList:
           Type: Api
