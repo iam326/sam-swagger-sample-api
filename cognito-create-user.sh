@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-readonly STACK_NAME="sam-swagger-sample"
+source ./config.sh
 
 readonly USERNAME=$1
 readonly EMAIL=$2

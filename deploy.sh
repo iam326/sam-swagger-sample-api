@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-readonly STACK_NAME="sam-swagger-sample"
+source ./config.sh
+
 readonly BUCKET_NAME="iam326.${STACK_NAME}"
 
 aws s3 cp swagger.yaml s3://${BUCKET_NAME}/swagger.yaml
@@ -16,7 +17,10 @@ sam package \
 sam deploy \
   --template-file packaged.yaml \
   --stack-name ${STACK_NAME} \
-  --capabilities CAPABILITY_IAM
+  --capabilities CAPABILITY_IAM \
+  --parameter-overrides \
+    TodoTableName=${TODO_TABLE_NAME} \
+    TodoDateIndexName=${TODO_DATE_INDEX_NAME}
 
 rm packaged.yaml
 

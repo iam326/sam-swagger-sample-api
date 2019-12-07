@@ -6,6 +6,12 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  TodoTableName:
+    Type: String
+  TodoDateIndexName:
+    Type: String
+
 Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
@@ -81,7 +87,35 @@ Resources:
       Roles:
         authenticated: !GetAtt AuthenticatedRole.Arn
 
-  PythonVersionApi:
+  CloudWatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - >-
+          arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  # アカウント共有設定
+  Account:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt CloudWatchRole.Arn
+
+  CloudWatchAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${AWS::StackName}-api-logs"
+      RetentionInDays: 7
+
+  SampleApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
@@ -96,6 +130,14 @@ Resources:
           Parameters:
             Location: s3://iam326.sam-swagger-sample/swagger.yaml
 
+      AccessLogSetting:
+        DestinationArn: !GetAtt CloudWatchAccessLogGroup.Arn
+      MethodSettings:
+        - DataTraceEnabled: true
+          LoggingLevel: INFO
+          ResourcePath: "/*"
+          HttpMethod: "*"
+
   PythonVersionFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -108,12 +150,129 @@ Resources:
           Properties:
             Path: /version
             Method: get
-            RestApiId: !Ref PythonVersionApi
+            RestApiId: !Ref SampleApi
+
+  GetTodoListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: get_todo_list.lambda_handler
+      Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
+          TODO_DATE_INDEX_NAME: !Ref TodoDateIndexName
+      Events:
+        GetTodoList:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: get
+            RestApiId: !Ref SampleApi
+
+  GetTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: get_todo.lambda_handler
+      Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
+      Events:
+        GetTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: get
+            RestApiId: !Ref SampleApi
+
+  PostTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: post_todo.lambda_handler
+      Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
+      Events:
+        PostTodo:
+          Type: Api
+          Properties:
+            Path: /todo
+            Method: post
+            RestApiId: !Ref SampleApi
+
+  PatchTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: patch_todo.lambda_handler
+      Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
+      Events:
+        PatchTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: patch
+            RestApiId: !Ref SampleApi
+
+  DeleteTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/todo/
+      Handler: delete_todo.lambda_handler
+      Runtime: python3.7
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TODO_TABLE_NAME: !Ref TodoTableName
+      Events:
+        DeleteTodo:
+          Type: Api
+          Properties:
+            Path: /todo/{id}
+            Method: delete
+            RestApiId: !Ref SampleApi
+
+  TodoDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref TodoTableName
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: date
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: date-index
+          KeySchema:
+            - AttributeName: date
+              KeyType: HASH
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
 
 Outputs:
-  PythonVersionApiUrl:
+  SampleApiUrl:
     Description: API Gateway endpoint URL for Prod stage for Python Version Function
-    Value: !Sub https://${PythonVersionApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/version
+    Value: !Sub https://${SampleApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/version
   UserPoolId:
     Value: !Ref UserPool
   UserPoolArn:
