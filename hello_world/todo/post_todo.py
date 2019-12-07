@@ -2,25 +2,25 @@ import boto3
 import json
 import os
 import sys
-# import uuid
+import uuid
 
-dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table(os.environ["TODO_TABLE_NAME"])
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table(os.environ['TODO_TABLE_NAME'])
 
 
 def lambda_handler(event, context):
-
-  table.put_item(
-      Item={
-          # "id": str(uuid.uuid4()),
-          "id": "hoge",
-          "date": "2019-12-25",
-          "title": "foo",
-          "body": "bar"
-      }
-  )
+  body = json.loads(event['body'])
+  item = {
+      'id': str(uuid.uuid4()),
+      'date': body['date'],
+      'title': body['title'],
+      'body': body['body']
+  }
+  table.put_item(Item=item)
 
   return {
-      "statusCode": 200,
-      "body": json.dumps({})
+      'statusCode': 200,
+      'body': json.dumps({
+          'todo': [item]
+      })
   }
