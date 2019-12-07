@@ -1,0 +1,33 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          version: '3.7'
+          architecture: 'x64'
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-mock --user
+          pip install requests
+          pip install boto3
+      - name: Run API Test
+        run: |
+          pwd
+          ./python_test.sh
+        env:
+          SAM_SWAGGER_SAMPLE_USERNAME: ${{ secrets.SAM_SWAGGER_SAMPLE_USERNAME }}
+          SAM_SWAGGER_SAMPLE_PASSWORD: ${{ secrets.SAM_SWAGGER_SAMPLE_PASSWORD }}
