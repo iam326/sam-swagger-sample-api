@@ -41,7 +41,7 @@ $ ./cognito-create-user.sh <USERNAME> <EMAIL> <PASSWORD>
 
 ```
 $ pip install pytest pytest-mock --user
-$ python -m pytest tests/ -v
+$ ./python_test.sh
 ```
 
 ## Memo
