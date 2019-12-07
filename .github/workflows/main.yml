@@ -14,7 +14,10 @@ jobs:
           version: '3.7'
           architecture: 'x64'
       - name: Install dependencies
-        run: pip install pytest pytest-mock --user
+        run: |
+          pip install pytest pytest-mock --user
+          pip install requests
+          pip install boto3
       - name: Run API Test
         run: |
           pwd
