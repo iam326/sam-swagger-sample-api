@@ -31,3 +31,6 @@ jobs:
           python --version
           pip --version
           ./python_test.sh
+        env:
+          SAM_SWAGGER_SAMPLE_USERNAME: ${{ secrets.SAM_SWAGGER_SAMPLE_USERNAME }}
+          SAM_SWAGGER_SAMPLE_PASSWORD: ${{ secrets.SAM_SWAGGER_SAMPLE_PASSWORD }}
